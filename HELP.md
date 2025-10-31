@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'com.neusis.neusis-backend' is invalid and this project uses 'com.neusis.neusis_backend' instead.
+* The original package name 'com.neusis.neusis-backend' is invalid and this project uses 'com.neusis.neusis_backAPI' instead.
 
 # Getting Started
 

@@ -1,4 +1,4 @@
-package com.neusis.neusis_backend;
+package com.neusis.neusis_backAPI;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
