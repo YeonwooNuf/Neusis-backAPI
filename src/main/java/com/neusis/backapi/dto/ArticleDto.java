@@ -6,15 +6,14 @@ import com.neusis.backapi.domain.Category;
 import com.neusis.backapi.domain.IngestStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter @Setter
 public class ArticleDto {
 
     private Long articleId;             // 기사 고유 ID
