@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 
+// 기사 원문 테이블을 다루는 Repository(DB 접근 계층)
 // 어떤 엔티티를 관리할지(Article) & Article의 기본키 타입(Long)
 public interface ArticleRepository extends JpaRepository<Article, Long> {
 
