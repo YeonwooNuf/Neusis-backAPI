@@ -1,9 +1,7 @@
 package com.neusis.backapi.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "article")   // 분석 결과 테이블
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+@Getter @Setter
 public class Article {
 
     @Id
