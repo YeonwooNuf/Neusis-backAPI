@@ -1,4 +1,4 @@
-package com.neusis.neusis_backAPI;
+package com.neusis.backapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
