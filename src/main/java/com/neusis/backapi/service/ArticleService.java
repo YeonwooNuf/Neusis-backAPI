@@ -1,14 +1,16 @@
 package com.neusis.backapi.service;
 
-import com.neusis.backapi.domain.Article;
-import com.neusis.backapi.domain.IngestStatus;
+import com.neusis.backapi.domain.*;
 import com.neusis.backapi.dto.ArticleDto;
 import com.neusis.backapi.exception.NotFoundException;
 import com.neusis.backapi.repository.AnalysisResultRepository;
 import com.neusis.backapi.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 // final 이 붙은 필드 자동으로 생성자 파라미터로 변환
 @RequiredArgsConstructor
@@ -52,5 +54,29 @@ public class ArticleService {
         Article a = articleRepo.findById(articleId)
                 .orElseThrow(()-> new NotFoundException("다음 원문 찾을 수 없음 : " + articleId));
         return ArticleDto.fromEntity(a);
+    }
+
+    // 기사 목록 (필터 & 페이지)
+    // status / category+기간 / 기간 / 전체
+    // 최신(publishedAt, createdAt) 우선 정렬
+    public Page<ArticleDto> list(Integer page, Integer size, Category category,
+                                 LocalDateTime from, LocalDateTime to, IngestStatus status) {
+        Pageable pageable = PageRequest.of(
+                page == null ? 0 : page,
+                size == null ? 20 : size,
+                Sort.by(Sort.Direction.DESC, "publishedAt", "createdAt")
+        );
+
+        Page<Article> result;
+        if (status != null) {
+            result = articleRepo.findByIngestStatus(status, pageable);
+        } else if (category != null && from != null && to != null) {
+            result = articleRepo.findByCategoryAndPublishedAtBetween(category, from, to, pageable);
+        } else if (from != null && to != null) {
+            result = articleRepo.findByPublishedAtBetween(from, to, pageable);
+        } else {
+            result = articleRepo.findAll(pageable);
+        }
+        return result.map(ArticleDto::fromEntity);
     }
 }
