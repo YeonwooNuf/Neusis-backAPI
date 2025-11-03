@@ -3,6 +3,7 @@ package com.neusis.backapi.service;
 import com.neusis.backapi.domain.Article;
 import com.neusis.backapi.domain.IngestStatus;
 import com.neusis.backapi.dto.ArticleDto;
+import com.neusis.backapi.exception.NotFoundException;
 import com.neusis.backapi.repository.AnalysisResultRepository;
 import com.neusis.backapi.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,5 +44,13 @@ public class ArticleService {
                 .build();
 
         return ArticleDto.fromEntity(articleRepo.save(a));
+    }
+
+    // 기사 원문 단건 조회
+    // 분석 결과가 있으면 DTO.analysis 에 포함
+    public ArticleDto getByArticleId(Long articleId) {
+        Article a = articleRepo.findById(articleId)
+                .orElseThrow(()-> new NotFoundException("다음 원문 찾을 수 없음 : " + articleId));
+        return ArticleDto.fromEntity(a);
     }
 }
