@@ -58,9 +58,13 @@ public class ArticleService {
 
     // 기사 목록 (필터 & 페이지)
     // status / category+기간 / 기간 / 전체
-    // 최신(publishedAt, createdAt) 우선 정렬
+    // 최신(publishedAt, createdAt) 우선 정렬[DESC]
     public Page<ArticleDto> list(Integer page, Integer size, Category category,
                                  LocalDateTime from, LocalDateTime to, IngestStatus status) {
+
+        // 페이징 및 정렬 기본값 설정
+        // page, size 가 null 이면 기본 0페이지, 20개
+        // 최신 순 정렬 : publishedAt 우선, 같으면 createdAt
         Pageable pageable = PageRequest.of(
                 page == null ? 0 : page,
                 size == null ? 20 : size,
@@ -68,12 +72,21 @@ public class ArticleService {
         );
 
         Page<Article> result;
+
+        // 상태 기반 조회
+        // 분석 파이프라인 모니터링/재처리 등에서 사용
         if (status != null) {
             result = articleRepo.findByIngestStatus(status, pageable);
+        // 카테고리 + 기간 동시 필터
+        // 특정 분야의 기간별 트렌드/집계용 조회
         } else if (category != null && from != null && to != null) {
             result = articleRepo.findByCategoryAndPublishedAtBetween(category, from, to, pageable);
+        // 기간만 필터
+        // 전 카테고리 대상 기간 범위 조회
         } else if (from != null && to != null) {
             result = articleRepo.findByPublishedAtBetween(from, to, pageable);
+        // 필터 없음 → 전체 조회
+        // 기본 최신순 페이지네이션
         } else {
             result = articleRepo.findAll(pageable);
         }
