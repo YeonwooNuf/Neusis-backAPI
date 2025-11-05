@@ -90,6 +90,7 @@ public class ArticleService {
         } else {
             result = articleRepo.findAll(pageable);
         }
+        // 엔티티 → DTO 변환
         return result.map(ArticleDto::fromEntity);
     }
 }
