@@ -93,4 +93,12 @@ public class ArticleService {
         // 엔티티 → DTO 변환
         return result.map(ArticleDto::fromEntity);
     }
+
+    // Pending 상태의 기사를 Failed 나 ANALYZED 로 변경
+    public ArticleDto updateStatus(Long articleId, IngestStatus status) {
+        Article a = articleRepo.findById(articleId)
+                .orElseThrow(()-> new NotFoundException("기사를 찾을 수 없음 : " + articleId));
+        a.setIngestStatus(status);
+        return ArticleDto.fromEntity(a);
+    }
 }
