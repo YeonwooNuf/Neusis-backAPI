@@ -95,10 +95,18 @@ public class ArticleService {
     }
 
     // Pending 상태의 기사를 Failed 나 ANALYZED 로 변경
+    @Transactional
     public ArticleDto updateStatus(Long articleId, IngestStatus status) {
         Article a = articleRepo.findById(articleId)
                 .orElseThrow(()-> new NotFoundException("기사를 찾을 수 없음 : " + articleId));
         a.setIngestStatus(status);
         return ArticleDto.fromEntity(a);
+    }
+
+    @Transactional
+    public void delete(Long articleId) {
+        Article a = articleRepo.findById(articleId)
+                .orElseThrow(()-> new NotFoundException("기사를 찾을 수 없음 : " + articleId));
+        articleRepo.delete(a);
     }
 }
