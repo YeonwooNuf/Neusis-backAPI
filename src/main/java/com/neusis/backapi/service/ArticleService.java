@@ -1,13 +1,16 @@
 package com.neusis.backapi.service;
 
-import com.neusis.backapi.domain.*;
-import com.neusis.backapi.dto.AnalysisDto;
+import com.neusis.backapi.domain.Article;
+import com.neusis.backapi.domain.Category;
+import com.neusis.backapi.domain.IngestStatus;
 import com.neusis.backapi.dto.ArticleDto;
 import com.neusis.backapi.exception.NotFoundException;
-import com.neusis.backapi.repository.AnalysisResultRepository;
 import com.neusis.backapi.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +27,6 @@ import java.time.LocalDateTime;
 @Service
 public class ArticleService {
     private final ArticleRepository articleRepo;    // 기사 원문 repo
-    private final AnalysisResultRepository analysisRepo;   // 분석 결과 repo
 
     private Article getArticleOrThrow(Long articleId) {
         return articleRepo.findById(articleId)
@@ -112,33 +114,5 @@ public class ArticleService {
     public void delete(Long articleId) {
         Article a = getArticleOrThrow(articleId);
         articleRepo.delete(a);
-    }
-
-    // 분석 결과 Upsert(Update + Insert)
-    @Transactional
-    public AnalysisDto upsertAnalysis(Long articleId, AnalysisDto req) {
-
-        // 기사 존재 확인
-        Article a = getArticleOrThrow(articleId);
-
-        // 기존 분석 결과가 있으면 갱신, 없으면 생성
-        AnalysisResult r = analysisRepo.findByArticle_ArticleId(articleId)
-                .orElseGet(() -> AnalysisResult.builder().article(a).build());
-
-        // 필드 매핑(Dto -> 엔티티)
-        // 요청 바디(LLM/ML 결과)를 분석 결과 엔티티에 반영
-        r.setSummary(req.getSummary());
-        r.setSentiment(req.getSentiment());
-        r.setKeywords(req.getKeywords());
-        r.setTrendScore(req.getTrendScore());
-        r.setProcessedAt(req.getProcessedAt());
-
-        AnalysisResult saved = analysisRepo.save(r);
-
-        // 성공 시 분석 상태 ANALYZED로 상태 변경
-        a.setIngestStatus(IngestStatus.ANALYZED);
-
-        // 엔티티 형식을 응답용 Dto로 변환해서 반환
-        return AnalysisDto.fromEntity(saved);
     }
 }
