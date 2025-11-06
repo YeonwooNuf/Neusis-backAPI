@@ -60,4 +60,14 @@ public class ArticleController {
     ) {
         return ResponseEntity.ok(articleService.updateStatus(articleId, status));
     }
+
+    // 경로 변수 id 기사 삭제
+    // 성공 시 204 No Content (본문 없음)로 반환
+    // 서비스 메소드에서 CasCade로 1:1 연관관계 삭제 전파
+    // Void -> 객체 타입이 필요한 곳에 리턴 타입이 없다는 걸 '객체 형태로' 표현
+    @DeleteMapping("/{articleId}")
+    public ResponseEntity<Void> deleteArticle(@PathVariable Long articleId) {
+        articleService.delete(articleId);
+        return ResponseEntity.noContent().build();
+    }
 }
