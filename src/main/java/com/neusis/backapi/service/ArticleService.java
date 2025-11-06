@@ -1,6 +1,7 @@
 package com.neusis.backapi.service;
 
 import com.neusis.backapi.domain.*;
+import com.neusis.backapi.dto.AnalysisDto;
 import com.neusis.backapi.dto.ArticleDto;
 import com.neusis.backapi.exception.NotFoundException;
 import com.neusis.backapi.repository.AnalysisResultRepository;
@@ -103,10 +104,40 @@ public class ArticleService {
         return ArticleDto.fromEntity(a);
     }
 
+    // 기사 삭제 (원문 삭제 시 분석 결과도 Cascade로 함께 삭제)
     @Transactional
     public void delete(Long articleId) {
         Article a = articleRepo.findById(articleId)
                 .orElseThrow(()-> new NotFoundException("기사를 찾을 수 없음 : " + articleId));
         articleRepo.delete(a);
+    }
+
+    // 분석 결과 Upsert(Update + Insert)
+    @Transactional
+    public AnalysisDto upsertAnalysis(Long articleId, AnalysisDto req) {
+
+        // 기사 존재 확인
+        Article a = articleRepo.findById(articleId)
+                .orElseThrow(()-> new NotFoundException("기사를 찾을 수 없음 : " + articleId));
+
+        // 기존 분석 결과가 있으면 갱신, 없으면 생성
+        AnalysisResult r = analysisRepo.findByArticle_ArticleId(articleId)
+                .orElseGet(() -> AnalysisResult.builder().article(a).build());
+
+        // 필드 매핑(Dto -> 엔티티)
+        // 요청 바디(LLM/ML 결과)를 분석 결과 엔티티에 반영
+        r.setSummary(req.getSummary());
+        r.setSentiment(req.getSentiment());
+        r.setKeywords(req.getKeywords());
+        r.setTrendScore(req.getTrendScore());
+        r.setProcessedAt(req.getProcessedAt());
+
+        AnalysisResult saved = analysisRepo.save(r);
+
+        // 성공 시 분석 상태 ANALYZED로 상태 변경
+        a.setIngestStatus(IngestStatus.ANALYZED);
+
+        // 엔티티 형식을 응답용 Dto로 변환해서 반환
+        return AnalysisDto.fromEntity(saved);
     }
 }
