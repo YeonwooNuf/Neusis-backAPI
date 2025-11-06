@@ -26,6 +26,11 @@ public class ArticleService {
     private final ArticleRepository articleRepo;    // 기사 원문 repo
     private final AnalysisResultRepository analysisRepo;   // 분석 결과 repo
 
+    private Article getArticleOrThrow(Long articleId) {
+        return articleRepo.findById(articleId)
+                .orElseThrow(()-> new NotFoundException("다음 기사를 찾을 수 없음 : " + articleId));
+    }
+
     @Transactional
     public ArticleDto create(ArticleDto req) {  // req = 요청(request) 데이터를 담고 있는 DTO 객체
 
@@ -52,8 +57,7 @@ public class ArticleService {
     // 기사 원문 단건 조회
     // 분석 결과가 있으면 DTO.analysis 에 포함
     public ArticleDto getByArticleId(Long articleId) {
-        Article a = articleRepo.findById(articleId)
-                .orElseThrow(()-> new NotFoundException("다음 원문 찾을 수 없음 : " + articleId));
+        Article a = getArticleOrThrow(articleId);
         return ArticleDto.fromEntity(a);
     }
 
@@ -98,8 +102,7 @@ public class ArticleService {
     // Pending 상태의 기사를 Failed 나 ANALYZED 로 변경
     @Transactional
     public ArticleDto updateStatus(Long articleId, IngestStatus status) {
-        Article a = articleRepo.findById(articleId)
-                .orElseThrow(()-> new NotFoundException("기사를 찾을 수 없음 : " + articleId));
+        Article a = getArticleOrThrow(articleId);
         a.setIngestStatus(status);
         return ArticleDto.fromEntity(a);
     }
@@ -107,8 +110,7 @@ public class ArticleService {
     // 기사 삭제 (원문 삭제 시 분석 결과도 Cascade로 함께 삭제)
     @Transactional
     public void delete(Long articleId) {
-        Article a = articleRepo.findById(articleId)
-                .orElseThrow(()-> new NotFoundException("기사를 찾을 수 없음 : " + articleId));
+        Article a = getArticleOrThrow(articleId);
         articleRepo.delete(a);
     }
 
@@ -117,8 +119,7 @@ public class ArticleService {
     public AnalysisDto upsertAnalysis(Long articleId, AnalysisDto req) {
 
         // 기사 존재 확인
-        Article a = articleRepo.findById(articleId)
-                .orElseThrow(()-> new NotFoundException("기사를 찾을 수 없음 : " + articleId));
+        Article a = getArticleOrThrow(articleId);
 
         // 기존 분석 결과가 있으면 갱신, 없으면 생성
         AnalysisResult r = analysisRepo.findByArticle_ArticleId(articleId)
