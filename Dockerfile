@@ -1,31 +1,24 @@
-# -----------------------------
-# 빌드 단계
-# -----------------------------
-# Gradle Wrapper(./gradlew) 사용 — arm64 / amd64 모두 호환되는 Temurin 기반
-FROM eclipse-temurin:17-jdk AS build
-WORKDIR /src
+# -------- build stage (Gradle 내장 이미지로 의존성 캐시 효과 극대화) --------
+FROM gradle:8.10.2-jdk17-jammy AS build
+WORKDIR /workspace
 
-# Gradle 캐시 최적화 (wrapper & 설정만 먼저 복사)
-COPY gradlew settings.gradle build.gradle ./
-COPY gradle gradle
-RUN chmod +x gradlew && ./gradlew --version
+# 1) 캐시가 덜 변하는 것들부터 복사
+COPY settings.gradle build.gradle gradle.properties ./
+COPY gradle ./gradle
 
-# 나머지 소스 복사 및 빌드
-COPY . .
-RUN ./gradlew clean bootJar -x test
+# 2) 의존성만 미리 받아서 레이어 캐시화 (실패해도 캐시 남도록)
+RUN gradle --no-daemon dependencies || true
 
-# -----------------------------
-# 런타임 단계
-# -----------------------------
-FROM eclipse-temurin:17-jre
+# 3) 소스는 마지막에 복사 → 소스 변경 시 여기서만 캐시 무효
+COPY src ./src
+
+# 4) 빌드 (테스트 스킵으로 속도↑)
+RUN gradle clean bootJar -x test --no-daemon
+
+# -------- runtime stage --------
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
-
-# Build stage에서 만들어진 JAR 복사
-COPY --from=build /src/build/libs/*-SNAPSHOT.jar app.jar
-
-# 환경변수 및 포트 설정
-ENV JAVA_OPTS=""
+COPY --from=build /workspace/build/libs/*-SNAPSHOT.jar app.jar
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
 EXPOSE 8080
-
-# 컨테이너 실행 시 Spring Boot 앱 실행
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["sh","-c","java $JAVA_OPTS -jar app.jar"]
