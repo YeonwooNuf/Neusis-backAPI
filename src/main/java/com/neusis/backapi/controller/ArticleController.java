@@ -5,10 +5,7 @@ import com.neusis.backapi.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +20,11 @@ public class ArticleController {
         ArticleDto created = articleService.create(dto);
         // Http 응답 코드를 이름으로 표현(201 -> CREATED)
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    // 기사 단건 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<ArticleDto> getArticle(@PathVariable Long articleId) {
+        return ResponseEntity.ok(articleService.getByArticleId(articleId));
     }
 }
