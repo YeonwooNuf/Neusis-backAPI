@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/articles/{id}/analysis")
+@RequestMapping("/api/articles/{articleId}/analysis")
 public class AnalysisController {
 
     private final AnalysisService analysisService;
@@ -23,5 +23,11 @@ public class AnalysisController {
             @RequestBody @Valid AnalysisDto dto
     ) {
         return ResponseEntity.ok(analysisService.upsertAnalysis(articleId, dto));
+    }
+
+    // 기사 분석 결과 단건 조회
+    @GetMapping
+    public ResponseEntity<AnalysisDto> getAnalysis(@PathVariable Long articleId) {
+        return ResponseEntity.ok(analysisService.getByArticleId(articleId));
     }
 }
