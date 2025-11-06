@@ -1,11 +1,16 @@
 package com.neusis.backapi.controller;
 
+import com.neusis.backapi.domain.Category;
+import com.neusis.backapi.domain.IngestStatus;
 import com.neusis.backapi.dto.ArticleDto;
 import com.neusis.backapi.service.ArticleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,8 +28,25 @@ public class ArticleController {
     }
 
     // 기사 단건 조회
-    @GetMapping("/{id}")
+    // PathVariable 사용해서 URL 경로에 변수 추가(articleId)
+    @GetMapping("/{articleId}}")
     public ResponseEntity<ArticleDto> getArticle(@PathVariable Long articleId) {
         return ResponseEntity.ok(articleService.getByArticleId(articleId));
+    }
+
+    // 기사 목록 (필터링 + 페이징)
+    // 요청 예시 : (URL?key=value)
+    // GET /api/articles?page=0&size=10&category=IT&status=ANALYZED
+    // required = false -> 없으면 null 처리 (선택적 필터링 가능)
+    @GetMapping
+    public ResponseEntity<Page<ArticleDto>> listArticles(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) Category category,
+            @RequestParam(required = false) LocalDateTime from,
+            @RequestParam(required = false) LocalDateTime to,
+            @RequestParam(required = false)IngestStatus status
+    ) {
+        return ResponseEntity.ok(articleService.list(page, size, category, from, to, status));
     }
 }
