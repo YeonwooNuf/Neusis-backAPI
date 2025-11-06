@@ -29,7 +29,7 @@ public class ArticleController {
 
     // 기사 단건 조회
     // PathVariable 사용해서 URL 경로에 변수 추가(articleId)
-    @GetMapping("/{articleId}}")
+    @GetMapping("/{articleId}")
     public ResponseEntity<ArticleDto> getArticle(@PathVariable Long articleId) {
         return ResponseEntity.ok(articleService.getByArticleId(articleId));
     }
