@@ -51,4 +51,11 @@ public class AnalysisService {
         // 엔티티 형식을 응답용 Dto로 변환해서 반환
         return AnalysisDto.fromEntity(saved);
     }
+
+    // 기사 별 분석 결과 조회(단건)
+    // 기사 원문의 articleId 기반으로 연관 조회
+    public AnalysisDto getByArticleId(Long articleId) {
+        AnalysisResult r = getArticleOrThrow(articleId);
+        return AnalysisDto.fromEntity(r);
+    }
 }
