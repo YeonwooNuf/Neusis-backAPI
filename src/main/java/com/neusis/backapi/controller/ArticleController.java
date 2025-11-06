@@ -49,4 +49,15 @@ public class ArticleController {
     ) {
         return ResponseEntity.ok(articleService.list(page, size, category, from, to, status));
     }
+
+    // 기사 상태 변경
+    // Put (전체 수정) vs Patch (일부 수정)
+    // 상태만 변경하므로 PatchMapping 사용
+    @PatchMapping("/{articleId}/status")
+    public ResponseEntity<ArticleDto> updateStatus(
+            @PathVariable Long articleId,
+            @RequestParam IngestStatus status   // 쿼리 파라미터로 상태값 전달
+    ) {
+        return ResponseEntity.ok(articleService.updateStatus(articleId, status));
+    }
 }
