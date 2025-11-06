@@ -58,4 +58,11 @@ public class AnalysisService {
         AnalysisResult r = getArticleOrThrow(articleId);
         return AnalysisDto.fromEntity(r);
     }
+
+    // 기사 별 분석 결과 삭제
+    @Transactional
+    public void deleteByArticleId(Long articleId) {
+        AnalysisResult r = getArticleOrThrow(articleId);
+        analysisRepo.delete(r);
+    }
 }
