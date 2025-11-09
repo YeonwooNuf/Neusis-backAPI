@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     // 500: 예상치 못한 예외 (NullPointerException 등)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneral(Exception e) {
-        e.printStackTrace(); // ⚠️ 개발 단계에서는 로그 남기기
+        e.printStackTrace(); // 개발 단계에서는 로그 남기기
         return build(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
