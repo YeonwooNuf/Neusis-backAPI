@@ -26,8 +26,8 @@ public class Article {
 
     private String source;          // 언론사
 
-    @Column(nullable = false)
-    private String url;             // 원문 URL  (중복/유니크 제약은 나중에)
+    @Column(nullable = false, unique = true)
+    private String url;             // 원문 URL  (중복 방지 unique = true)
 
     @Enumerated(EnumType.STRING) // 문자열로 저장
     @Column(nullable = false, length = 20)

@@ -1,7 +1,6 @@
 package com.neusis.backapi.domain;
 
 // 감정 분석 결과 ENUM 예시 클래스
-
 public enum Sentiment {
     POSITIVE,  // 긍정
     NEUTRAL,   // 중립
