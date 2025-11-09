@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 // 기사 분석 결과 전달용 Dto
@@ -36,7 +37,9 @@ public class AnalysisDto {
                 .articleId(result.getArticle().getArticleId())
                 .summary(result.getSummary())
                 .sentiment(result.getSentiment())
-                .keywords(result.getKeywords())
+                .keywords(result.getKeywords() == null
+                        ? List.of()
+                        : new ArrayList<>(result.getKeywords()))
                 .trendScore(result.getTrendScore())
                 .processedAt(result.getProcessedAt())
                 .createdAt(result.getCreatedAt())
