@@ -32,7 +32,7 @@ public class ArticleInteractionService {    // 읽음 기록 + 좋아요 토글 
         // 처음으로 상세 진입 시 읽음 기록
         if(!readRepo.existsByUserUserIdAndArticleArticleId(userId, articleId)) {
             readRepo.save(UserArticleRead.builder()
-                    .user(user).article(article).build();
+                    .user(user).article(article).build());
         }
     }
 
