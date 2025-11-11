@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AnalysisResult {
+public class AnalysisResult {   // 분석 결과 테이블
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long resultId;  // 분석 결과 고유 ID (자동 증가)
 

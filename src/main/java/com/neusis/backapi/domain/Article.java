@@ -8,7 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "article")   // 분석 결과 테이블
+@Table(name = "article")   // 기사 원문 테이블
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Getter @Setter
