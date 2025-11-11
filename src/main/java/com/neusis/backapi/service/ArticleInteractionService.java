@@ -2,10 +2,10 @@ package com.neusis.backapi.service;
 
 import com.neusis.backapi.domain.Article;
 import com.neusis.backapi.domain.User;
-import com.neusis.backapi.domain.UserArticleRead;
+import com.neusis.backapi.domain.UserRead;
 import com.neusis.backapi.domain.UserLike;
 import com.neusis.backapi.repository.ArticleRepository;
-import com.neusis.backapi.repository.UserArticleReadRepository;
+import com.neusis.backapi.repository.UserReadRepository;
 import com.neusis.backapi.repository.UserLikeRepository;
 import com.neusis.backapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class ArticleInteractionService {    // 읽음 기록 + 좋아요 토글 
 
     private final UserRepository userRepo;
     private final ArticleRepository articleRepo;
-    private final UserArticleReadRepository readRepo;
+    private final UserReadRepository readRepo;
     private final UserLikeRepository likeRepo;
 
     @Transactional
@@ -31,7 +31,7 @@ public class ArticleInteractionService {    // 읽음 기록 + 좋아요 토글 
 
         // 처음으로 상세 진입 시 읽음 기록
         if(!readRepo.existsByUserUserIdAndArticleArticleId(userId, articleId)) {
-            readRepo.save(UserArticleRead.builder()
+            readRepo.save(UserRead.builder()
                     .user(user).article(article).build());
         }
     }

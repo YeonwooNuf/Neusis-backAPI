@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserArticleRead {
+public class UserRead {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
