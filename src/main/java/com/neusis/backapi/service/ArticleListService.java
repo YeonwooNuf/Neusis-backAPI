@@ -5,6 +5,8 @@ import com.neusis.backapi.domain.Category;
 import com.neusis.backapi.domain.IngestStatus;
 import com.neusis.backapi.dto.ArticleListDto;
 import com.neusis.backapi.repository.ArticleRepository;
+import com.neusis.backapi.repository.UserArticleReadRepository;
+import com.neusis.backapi.repository.UserLikeRepository;
 import com.neusis.backapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,12 +17,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class ArticleListService {   // 기사 목록을 조회하고 사용자 상태를 함께 반환
+
     private final UserRepository userRepo;
     private final ArticleRepository articleRepo;
+    private final UserLikeRepository likeRepo;
+    private final UserArticleReadRepository readRepo;
 
     @Transactional(readOnly = true)
     public Page<ArticleListDto> getArticleListWithUserFlags(
@@ -48,5 +54,13 @@ public class ArticleListService {   // 기사 목록을 조회하고 사용자 �
         } else {
             p = articleRepo.findAll(pageable);                              // 전체
         }
+        
+        // 페이징 정보(기사 목록, 전체 건수 등)에서 기사 id만 추출
+        // p.getContent -> 현재 페이지의 엔티티 목록을 반환
+        // .stream -> 목록 순회
+        // .map(Article::getArticleId) -> 각각의 Article 객체에서 id 필드만 추출
+        // .toList -> Stream을 다시 List 형태로 변환
+        // 결과 -> List<Long> ids = [101, 102, 103, 104, 105];
+        var ids = p.getContent().stream().map(Article::getArticleId).toList();
     }
 }
