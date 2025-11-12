@@ -9,6 +9,8 @@ public interface UserLikeRepository extends JpaRepository<UserLike, Long> {
 
     boolean existsByUserUserIdAndArticleArticleId(Long userId, Long articleId);
 
+    long deleteByUserUserId(Long userId);
+
     long deleteByUserUserIdAndArticleArticleId(Long userId, Long articleId);
 
     // 한 사용자가 목록 내 10개 기사에 대해 어떤 건 좋아요 눌렀고, 어떤 건 안 눌렀는지 표시
