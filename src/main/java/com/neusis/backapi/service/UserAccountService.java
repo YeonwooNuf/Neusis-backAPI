@@ -16,6 +16,8 @@ public class UserAccountService {
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
 
+    // 회원가입
+    // 기본 role : USER
     @Transactional
     public Long signup(AuthDtos.SignupRequest req) {
         // 이메일 중복 방지
@@ -25,7 +27,7 @@ public class UserAccountService {
 
         User user = User.builder()
                 .email(req.getEmail())
-                .passwordHash(passwordEncoder.encode(req.getPassword()))
+                .passwordHash(passwordEncoder.encode(req.getPassword()))    // 비밀번호 해시화
                 .nickname(req.getNickname())
                 .role("USER")   // 기본값
                 .build();
