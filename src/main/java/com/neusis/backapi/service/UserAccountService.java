@@ -34,4 +34,25 @@ public class UserAccountService {
 
         return userRepo.save(user).getUserId();
     }
+
+    // 로그인
+    public AuthDtos.LoginResponse login(AuthDtos.LoginRequest req) {
+
+        // 아이디(이메일) 검증
+        User user = userRepo.findByEmail(req.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("아이디 혹은 비밀번호가 옳지 않습니다."));
+
+        // 비밀번호 검증
+        if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
+            throw new IllegalArgumentException("아이디 혹은 비밀번호가 옳지 않습니다.");
+        }
+
+        // 성공 시 userId 등 최소 정보 반환
+        return AuthDtos.LoginResponse.builder()
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .role(user.getRole())
+                .build();
+    }
 }
