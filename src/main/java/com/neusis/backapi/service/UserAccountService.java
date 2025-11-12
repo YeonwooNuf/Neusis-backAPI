@@ -5,6 +5,7 @@ import com.neusis.backapi.dto.AuthDtos;
 import com.neusis.backapi.dto.UserDto;
 import com.neusis.backapi.exception.NotFoundException;
 import com.neusis.backapi.repository.UserRepository;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -73,5 +74,20 @@ public class UserAccountService {
     public UserDto getMyInfo(Long userId) {
         User user = getUserOrThrow(userId);
         return UserDto.fromEntity(user);
+    }
+
+    // 회원 탈퇴
+    @Transactional
+    public void deleteMe(Long userId, @Nullable String rawPassword) {
+        User user = getUserOrThrow(userId);
+
+        if (rawPassword != null && !rawPassword.isBlank()) {
+            if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+                throw new IllegalArgumentException("INVALID_CREDENTIALS");
+            }
+        }
+
+        // FK CASCADE 있는 경우 : 바로 사용자 삭제
+        userRepo.delete(user);
     }
 }
