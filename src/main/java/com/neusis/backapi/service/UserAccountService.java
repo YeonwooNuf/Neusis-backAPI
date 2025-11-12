@@ -55,4 +55,8 @@ public class UserAccountService {
                 .role(user.getRole())
                 .build();
     }
+
+    @Transactional
+    public void logout(Long userId) {
+    }
 }
