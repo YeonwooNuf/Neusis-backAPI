@@ -2,6 +2,8 @@ package com.neusis.backapi.service;
 
 import com.neusis.backapi.domain.User;
 import com.neusis.backapi.dto.AuthDtos;
+import com.neusis.backapi.dto.UserDto;
+import com.neusis.backapi.exception.NotFoundException;
 import com.neusis.backapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +17,12 @@ public class UserAccountService {
 
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
+
+    // 공통 예외처리
+    private User getUserOrThrow(Long userId) {
+        return userRepo.findById(userId)
+                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+    }
 
     // 회원가입
     // 기본 role : USER
@@ -56,7 +64,14 @@ public class UserAccountService {
                 .build();
     }
 
+    // 로그아웃
     @Transactional
     public void logout(Long userId) {
+    }
+
+    // 내 정보 조회
+    public UserDto getMyInfo(Long userId) {
+        User user = getUserOrThrow(userId);
+        return UserDto.fromEntity(user);
     }
 }
