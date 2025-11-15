@@ -52,4 +52,21 @@ public class UserAccountController {
         session.invalidate();
         return ResponseEntity.noContent().build();
     }
+
+    // 내 정보 조회
+    @GetMapping("/users/me")
+    public ResponseEntity<UserDto> getMyInfo(HttpSession session) {
+
+        // 세션 정보 가져오기
+        UserDto sessionUser = (UserDto) session.getAttribute(LOGIN_USER_KEY);
+
+        // 세션 비어있을 시
+        if(sessionUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        // 세션에 저장되어있는 userId 가져오기
+        UserDto dto = userAccountService.getMyInfo(sessionUser.getUserId());
+        return ResponseEntity.ok(dto);
+    }
 }
