@@ -45,7 +45,7 @@ public class UserAccountService {
     }
 
     // 로그인
-    public AuthDtos.LoginResponse login(AuthDtos.LoginRequest req) {
+    public UserDto login(AuthDtos.LoginRequest req) {
 
         // 아이디(이메일) 검증
         User user = userRepo.findByEmail(req.getEmail())
@@ -57,12 +57,7 @@ public class UserAccountService {
         }
 
         // 성공 시 userId 등 최소 정보 반환
-        return AuthDtos.LoginResponse.builder()
-                .userId(user.getUserId())
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .role(user.getRole())
-                .build();
+        return UserDto.fromEntity(user);
     }
 
     // 로그아웃
