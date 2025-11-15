@@ -1,7 +1,9 @@
 package com.neusis.backapi.controller;
 
 import com.neusis.backapi.dto.AuthDtos;
+import com.neusis.backapi.dto.UserDto;
 import com.neusis.backapi.service.UserAccountService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ public class UserAccountController {
 
     private final UserAccountService userAccountService;
 
+    private static final String LOGIN_USER_KEY = "LOGIN_USER";  // 세션 저장용 태그 이름
+
     // 회원가입
     @PostMapping("/auth/signup")
     public ResponseEntity<Long> signup(@Valid @RequestBody AuthDtos.SignupRequest req) {
@@ -28,11 +32,18 @@ public class UserAccountController {
 
     // 로그인
     @PostMapping("/auth/login")
-    public ResponseEntity<AuthDtos.LoginResponse> login(
-            @Valid @RequestBody AuthDtos.LoginRequest req   // 요청 바디를 JSON으로 받고, DTO에서 검증 조건을 처리
+    public ResponseEntity<UserDto> login(
+            @Valid @RequestBody AuthDtos.LoginRequest req,   // 요청 바디를 JSON으로 받고, DTO에서 검증 조건을 처리
+            HttpSession session
     ) {
-        AuthDtos.LoginResponse resp = userAccountService.login(req);
-        return ResponseEntity.ok(resp);
+        // 서비스에서 검증 + UserDto 생성
+        UserDto userDto = userAccountService.login(req);
+
+        // 세션에 저장
+        session.setAttribute(LOGIN_USER_KEY, userDto);
+
+        // 응답도 UserDto 그대로 반환
+        return ResponseEntity.ok(userDto);
     }
 
     // 로그아웃 (토큰/세션 도입 전이므로 일단 형식만)
