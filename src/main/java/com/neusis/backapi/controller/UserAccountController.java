@@ -46,9 +46,10 @@ public class UserAccountController {
         return ResponseEntity.ok(userDto);
     }
 
-    // 로그아웃 (토큰/세션 도입 전이므로 일단 형식만)
-    public ResponseEntity<Void> logout(@RequestParam Long userId) {
-            userAccountService.logout(userId);
-            return ResponseEntity.noContent().build();
+    // 로그아웃 (세션 무효화)
+    @PostMapping("/auth/logout")
+    public ResponseEntity<Void> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.noContent().build();
     }
 }
