@@ -5,10 +5,7 @@ import com.neusis.backapi.service.UserAccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -30,10 +27,17 @@ public class UserAccountController {
     }
 
     // 로그인
+    @PostMapping("/auth/login")
     public ResponseEntity<AuthDtos.LoginResponse> login(
             @Valid @RequestBody AuthDtos.LoginRequest req   // 요청 바디를 JSON으로 받고, DTO에서 검증 조건을 처리
     ) {
         AuthDtos.LoginResponse resp = userAccountService.login(req);
         return ResponseEntity.ok(resp);
+    }
+
+    // 로그아웃 (토큰/세션 도입 전이므로 일단 형식만)
+    public ResponseEntity<Void> logout(@RequestParam Long userId) {
+            userAccountService.logout(userId);
+            return ResponseEntity.noContent().build();
     }
 }
