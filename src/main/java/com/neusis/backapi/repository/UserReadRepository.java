@@ -47,7 +47,17 @@ public interface UserReadRepository extends JpaRepository<UserRead, Long> {
     // 최근 조회 기사 목록용 (필요한 개수만. 지금은 Top10)
     List<UserRead> findTop10ByUserUserIdOrderByReadDateDescReadIdDesc(Long userId);
 
-    boolean existsByUserUserIdAndArticleArticleId(Long userId, Long articleId);
+    // 연속 출석일 수 계산용
+    @Query("""
+    select distinct ur.readDate
+    from UserRead ur
+    where ur.user.userId = :userId
+      and ur.readDate >= :from
+    """)
+    List<LocalDate> findDistinctReadDates(
+            @Param("userId") Long userId,
+            @Param("from") LocalDate from
+    );
 
     long deleteByUserUserId(Long userId);
 }
