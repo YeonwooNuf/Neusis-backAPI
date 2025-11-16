@@ -46,6 +46,7 @@ public class ArticleService {
         Article a = Article.builder()
                 .title(req.getTitle())
                 .content(req.getContent())
+                .author(req.getAuthor())
                 .source(req.getSource())
                 .url(req.getUrl())
                 .category(req.getCategory())

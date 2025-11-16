@@ -24,6 +24,8 @@ public class Article {
     @Column(columnDefinition = "TEXT")
     private String content; // 기사 본문 내용
 
+    private String author;          // 기자 이름
+
     private String source;          // 언론사
 
     @Column(nullable = false, unique = true)

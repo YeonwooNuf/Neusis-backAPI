@@ -22,6 +22,7 @@ public class ArticleDto {
     private String title;               // 기사 제목
 
     private String content;             // 기사 본문
+    private String author;
     private String source;              // 언론사
 
     @NotBlank
@@ -46,6 +47,7 @@ public class ArticleDto {
                 .articleId(article.getArticleId())
                 .title(article.getTitle())
                 .content(article.getContent())
+                .author(article.getAuthor())
                 .source(article.getSource())
                 .url(article.getUrl())
                 .category(article.getCategory())
