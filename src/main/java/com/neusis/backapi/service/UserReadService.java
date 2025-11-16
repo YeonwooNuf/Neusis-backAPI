@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -65,5 +67,43 @@ public class UserReadService {
                 .limit(size)
                 .map(UserReadDto::fromEntity)
                 .toList();
+    }
+
+    // 오늘 기준 연속 읽기 일수
+    // 최근 30일 내에서 연속 일수 계산
+    public int getCurrentStreak(Long userId, int days) {
+
+        // 기본 30일 설정
+        if (days <= 0) {
+            days = 30;
+        }
+
+        // 대한민국 기준 시간 적용
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        // streak 계산을 시작할 기준 날짜
+        // 오늘 포함이라 빼는 날짜에서 -1(Long 타입)
+        LocalDate from = today.minusDays(days - 1L);
+
+        // 최근 N일 동안 사용자가 읽은 날짜들만 중복제거하여 변환
+        List<LocalDate> dates = readRepo.findDistinctReadDates(userId, from);
+
+        // 특정 날짜 읽었는지 여부 확인을 O(1) 로 빠르게 하기 위해.
+        // 조회한 날짜 목록을 Set 으로 변경
+        Set<LocalDate> set = new HashSet<>(dates);
+
+        // 연속 일 수
+        int streak = 0;
+        // 오늘부터 하루씩 감소하며 streak를 계산하는 포인터
+        LocalDate cursor = today;
+
+        // N일 범위(from~today) 안에서
+        // 해당 날자 읽은 기록 있으면 streak 이어지고
+        // 읽은 기록이 없어지는 순간 loop 종료
+        while (!cursor.isBefore(from) && set.contains(cursor)) {
+            streak++;
+            cursor = cursor.minusDays(1);
+        }
+
+        return streak;
     }
 }
