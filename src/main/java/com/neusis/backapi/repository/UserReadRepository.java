@@ -3,14 +3,33 @@ package com.neusis.backapi.repository;
 import com.neusis.backapi.domain.UserRead;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserReadRepository extends JpaRepository<UserRead, Long> {
+
+    // 특정 유저가 오늘 해당 기사를 읽었는지 여부
+    boolean existsByUserUserIdAndArticleArticleIdAndReadDate(
+            Long userId,
+            Long articleId,
+            LocalDate readDate
+    );
+
+    // 필요 시 엔티티까지 가져오고 싶을 때
+    Optional<UserRead> findByUserUserIdAndArticleArticleIdAndReadDate(
+            Long userId,
+            Long articleId,
+            LocalDate readDate
+    );
+
+    // 기사 리스트에 대해 읽음 여부 판단용 (리스트 페이지에서 사용)
+    List<UserRead> findByUserUserIdAndArticleArticleIdIn(Long userId, List<Long> articleIds);
+
+    // 최근 조회 기사 목록용 (필요한 개수만. 지금은 Top10)
+    List<UserRead> findTop10ByUserUserIdOrderByReadDateDescReadIdDesc(Long userId);
 
     boolean existsByUserUserIdAndArticleArticleId(Long userId, Long articleId);
 
     long deleteByUserUserId(Long userId);
-
-    // 한 사용자가 목록 내 10개 기사에 대해 어떤 건 봤었고, 어떤 건 안봤는지 표시
-    List<UserRead> findByUserUserIdAndArticleArticleIdIn(Long userId, List<Long> articleIds);
 }
