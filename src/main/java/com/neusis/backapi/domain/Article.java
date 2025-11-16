@@ -43,6 +43,9 @@ public class Article {
     @UpdateTimestamp
     private LocalDateTime updatedAt; // 수정 시각
 
+    @Column(nullable = false, columnDefinition = "bigint default 0")
+    private long viewCount;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable=false, length=16)
     private IngestStatus ingestStatus = IngestStatus.PENDING;

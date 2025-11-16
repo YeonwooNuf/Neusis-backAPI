@@ -35,6 +35,8 @@ public class ArticleDto {
     private LocalDateTime createdAt;    // 최초 생성 시각
     private LocalDateTime updatedAt;    // 최종 수정 시각
 
+    private Long viewCount;
+
     private IngestStatus ingestStatus;  // 분석 상태
 
     private AnalysisDto analysis;       // 분석 결과 (분석 여부에 따라 없을 수도 있음)
@@ -52,6 +54,7 @@ public class ArticleDto {
                 .url(article.getUrl())
                 .category(article.getCategory())
                 .publishedAt(article.getPublishedAt())
+                .viewCount(article.getViewCount())
                 .ingestStatus(article.getIngestStatus())
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
