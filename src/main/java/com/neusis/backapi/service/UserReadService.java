@@ -2,10 +2,8 @@ package com.neusis.backapi.service;
 
 import com.neusis.backapi.domain.Article;
 import com.neusis.backapi.domain.User;
-import com.neusis.backapi.domain.UserLike;
 import com.neusis.backapi.domain.UserRead;
 import com.neusis.backapi.repository.ArticleRepository;
-import com.neusis.backapi.repository.UserLikeRepository;
 import com.neusis.backapi.repository.UserReadRepository;
 import com.neusis.backapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,19 +15,16 @@ import java.time.ZoneId;
 
 @Service
 @RequiredArgsConstructor
-public class ArticleInteractionService {    // 읽음 기록 + 좋아요 토글 등 기사 상호작용 메소드
+@Transactional(readOnly = true)
+public class UserReadService {
 
     private final UserRepository userRepo;
     private final ArticleRepository articleRepo;
     private final UserReadRepository readRepo;
-    private final UserLikeRepository likeRepo;
 
-
-    /**
-     * 기사 상세 진입 시 호출되는 읽음 기록
-     * - 유저/기사/오늘 날짜 조합이 존재하면 기록 안 함
-     * - 날짜가 바뀌면 새 기록 생성
-     */
+    // 기사 상세 진입 시 호출되는 읽음 기록
+    // 유저 & 기사 & 오늘 날짜 조합이 존재하면 기록 안 함
+    // 날짜가 바뀌면 새 기록 생성
     @Transactional
     public void recordView(Long userId, Long articleId) {
 
@@ -54,25 +49,6 @@ public class ArticleInteractionService {    // 읽음 기록 + 좋아요 토글 
                     .readDate(today)
                     .build()
             );
-        }
-    }
-
-    @Transactional
-    public boolean toggleLike(Long userId, Long articleId) {
-        User user = userRepo.getReferenceById(userId);
-        Article article = articleRepo.getReferenceById(articleId);
-
-        // 좋아요 여부
-        boolean exists = likeRepo.existsByUserUserIdAndArticleArticleId(userId, articleId);
-
-        if(exists) {
-            // 좋아요 눌려있을 시 또 누르면 삭제
-            likeRepo.deleteByUserUserIdAndArticleArticleId(userId, articleId);
-            return false;
-        } else {
-            // 좋아요 없을 시 누르면 등록
-            likeRepo.save(UserLike.builder().user(user).article(article).build());
-            return true;
         }
     }
 }
