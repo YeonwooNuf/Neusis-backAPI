@@ -44,9 +44,6 @@ public interface UserReadRepository extends JpaRepository<UserRead, Long> {
     // 기사 리스트에 대해 읽음 여부 판단용 (리스트 페이지에서 사용)
     List<UserRead> findByUserUserIdAndArticleArticleIdIn(Long userId, List<Long> articleIds);
 
-    // 최근 조회 기사 목록용 (필요한 개수만. 지금은 Top10)
-    List<UserRead> findTop10ByUserUserIdOrderByReadDateDescReadIdDesc(Long userId);
-
     // 연속 출석일 수 계산용
     @Query("""
     select distinct ur.readDate

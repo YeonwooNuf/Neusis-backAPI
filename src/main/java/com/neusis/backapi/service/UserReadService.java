@@ -3,6 +3,7 @@ package com.neusis.backapi.service;
 import com.neusis.backapi.domain.Article;
 import com.neusis.backapi.domain.User;
 import com.neusis.backapi.domain.UserRead;
+import com.neusis.backapi.dto.UserReadDto;
 import com.neusis.backapi.repository.ArticleRepository;
 import com.neusis.backapi.repository.UserReadRepository;
 import com.neusis.backapi.repository.UserRepository;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -50,5 +52,18 @@ public class UserReadService {
                     .build()
             );
         }
+    }
+
+    // 최근 조회 기사 목록(중복 기사 제거, 최신순)
+    public List<UserReadDto> getRecentReads(Long userId, int limit) {
+        List<UserRead> rows = readRepo.findRecentDistinctArticles(userId);
+
+        int size = limit > 0 ? limit :10;
+
+        // stream -> List 형 변환
+        return rows.stream()
+                .limit(size)
+                .map(UserReadDto::fromEntity)
+                .toList();
     }
 }
