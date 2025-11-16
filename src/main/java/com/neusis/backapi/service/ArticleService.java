@@ -51,6 +51,7 @@ public class ArticleService {
                 .url(req.getUrl())
                 .category(req.getCategory())
                 .publishedAt(req.getPublishedAt())
+                .viewCount(req.getViewCount())
                 .ingestStatus(req.getIngestStatus() != null ? req.getIngestStatus() : IngestStatus.PENDING)
                 .build();
 

@@ -29,6 +29,7 @@ public class UserReadService {
     // 기사 상세 진입 시 호출되는 읽음 기록
     // 유저 & 기사 & 오늘 날짜 조합이 존재하면 기록 안 함
     // 날짜가 바뀌면 새 기록 생성
+    // 누적 조회수 1 증가
     @Transactional
     public void recordView(Long userId, Long articleId) {
 
@@ -54,6 +55,9 @@ public class UserReadService {
                     .build()
             );
         }
+
+        // api 호출 시마다 누적 조회수 증가
+        articleRepo.incrementViewCount(articleId);
     }
 
     // 최근 조회 기사 목록(중복 기사 제거, 최신순)

@@ -6,6 +6,9 @@ import com.neusis.backapi.domain.IngestStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 
@@ -27,4 +30,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     // 기사 수집/분석 상태별 조회
     Page<Article> findByIngestStatus(
             IngestStatus status, Pageable pageable);
+
+    @Modifying
+    @Query("update Article a set a.viewCount = a.viewCount + 1 where a.articleId = :articleId")
+    int incrementViewCount(@Param("articleId") Long articleId);
 }
