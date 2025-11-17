@@ -36,4 +36,10 @@ public class UserLikeService {
             return true;
         }
     }
+
+    // 좋아요 여부 조회 전용
+    @Transactional(readOnly = true)
+    public boolean isLiked(Long userId, Long articleId) {
+        return likeRepo.existsByUserUserIdAndArticleArticleId(userId, articleId);
+    }
 }
