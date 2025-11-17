@@ -38,6 +38,16 @@ public class UserInteractionController {
         return ResponseEntity.ok(liked);
     }
 
+    // 좋아요 여부 확인용 GET 메소드
+    @GetMapping("/{userId}/articles/{articleId}/like")
+    public ResponseEntity<Boolean> isLiked(
+            @PathVariable Long userId,
+            @PathVariable Long articleId
+    ) {
+        boolean liked = userLikeService.isLiked(userId, articleId);
+        return ResponseEntity.ok(liked);
+    }
+
     // 최근 조회 기사 목록(10개)
     // 중복 제거 -> 가장 최신 조회만
     @GetMapping("/{userId}/reads/recent")
@@ -51,7 +61,7 @@ public class UserInteractionController {
 
     // 연속 읽기 함수
     // 최근 N일 범위에서 오늘부터 연속 기록 계산
-    @GetMapping("/{usersId}/reads/streak")
+    @GetMapping("/{userId}/reads/streak")
     public ResponseEntity<Integer> getCurrentStreak(
             @PathVariable Long userId,
             @RequestParam(name = "days", required = false, defaultValue = "30") int days
