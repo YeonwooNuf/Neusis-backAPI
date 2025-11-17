@@ -48,6 +48,13 @@ public class UserInteractionController {
         return ResponseEntity.ok(liked);
     }
 
+    // 사용자 별 좋아요 누른 기사 개수
+    @GetMapping("/{userId}/likes/count")
+    public ResponseEntity<Long> getLikeCounts(@PathVariable Long userId) {
+        Long count = userLikeService.getLikeCount(userId);
+        return ResponseEntity.ok(count);
+    }
+
     // 최근 조회 기사 목록(10개)
     // 중복 제거 -> 가장 최신 조회만
     @GetMapping("/{userId}/reads/recent")
