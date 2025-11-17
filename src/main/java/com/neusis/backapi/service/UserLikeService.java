@@ -42,4 +42,10 @@ public class UserLikeService {
     public boolean isLiked(Long userId, Long articleId) {
         return likeRepo.existsByUserUserIdAndArticleArticleId(userId, articleId);
     }
+
+    // 사용자 별 좋아요 누른 기사 개수 조회
+    @Transactional(readOnly = true)
+    public long getLikeCount(Long userId) {
+        return likeRepo.countByUserUserId(userId);
+    }
 }

@@ -15,4 +15,7 @@ public interface UserLikeRepository extends JpaRepository<UserLike, Long> {
 
     // 한 사용자가 목록 내 10개 기사에 대해 어떤 건 좋아요 눌렀고, 어떤 건 안 눌렀는지 표시
     List<UserLike> findByUserUserIdAndArticleArticleIdIn(Long userId, List<Long> articleIds);
+
+    // 유저 별 좋아요(북마크) 개수
+    long countByUserUserId(Long userId);
 }
