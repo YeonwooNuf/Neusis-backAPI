@@ -49,6 +49,7 @@ public class ArticleService {
                 .author(req.getAuthor())
                 .source(req.getSource())
                 .url(req.getUrl())
+                .imageUrl(req.getImageUrl())
                 .category(req.getCategory())
                 .publishedAt(req.getPublishedAt())
                 .viewCount(req.getViewCount())

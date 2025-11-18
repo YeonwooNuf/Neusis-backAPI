@@ -4,6 +4,7 @@ import com.neusis.backapi.domain.AnalysisResult;
 import com.neusis.backapi.domain.Article;
 import com.neusis.backapi.domain.Category;
 import com.neusis.backapi.domain.IngestStatus;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -27,6 +28,8 @@ public class ArticleDto {
 
     @NotBlank
     private String url;                 // 기사 원문 url
+
+    private String imageUrl;   // 기사 대표 이미지 URL (optional)
 
     @NotNull
     private Category category;          // 기사 카테고리
