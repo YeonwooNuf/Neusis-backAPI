@@ -4,7 +4,6 @@ import com.neusis.backapi.domain.AnalysisResult;
 import com.neusis.backapi.domain.Article;
 import com.neusis.backapi.domain.Category;
 import com.neusis.backapi.domain.IngestStatus;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -55,6 +54,7 @@ public class ArticleDto {
                 .author(article.getAuthor())
                 .source(article.getSource())
                 .url(article.getUrl())
+                .imageUrl(article.getImageUrl())
                 .category(article.getCategory())
                 .publishedAt(article.getPublishedAt())
                 .viewCount(article.getViewCount())
