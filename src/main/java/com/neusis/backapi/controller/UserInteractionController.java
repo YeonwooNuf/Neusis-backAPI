@@ -76,4 +76,11 @@ public class UserInteractionController {
         int streak = userReadService.getCurrentStreak(userId, days);
         return ResponseEntity.ok(streak);
     }
+
+    // 사용자 별 읽은 기사 개수 조회
+    @GetMapping("/{userId}/reads/count")
+    public ResponseEntity<Long> getReadCount(@PathVariable Long userId) {
+        Long count = userReadService.getReadCount(userId);
+        return ResponseEntity.ok(count);
+    }
 }
