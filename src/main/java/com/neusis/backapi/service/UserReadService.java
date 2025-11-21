@@ -115,4 +115,9 @@ public class UserReadService {
     public long getReadCount(Long userId) {
         return readRepo.countByUserUserId(userId);
     }
+
+    // 전체 출석 날짜 리스트 (달력용)
+    public List<LocalDate> getAllReadDates(Long userId) {
+        return readRepo.findAllDistinctReadDates(userId);
+    }
 }

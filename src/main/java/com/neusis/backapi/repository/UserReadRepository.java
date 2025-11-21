@@ -56,6 +56,15 @@ public interface UserReadRepository extends JpaRepository<UserRead, Long> {
             @Param("from") LocalDate from
     );
 
+    // 전체 출석 날짜 리스트 (전체 누적)
+    @Query("""
+    select distinct ur.readDate
+    from UserRead ur
+    where ur.user.userId = :userId
+    order by ur.readDate asc
+    """)
+    List<LocalDate> findAllDistinctReadDates(@Param("userId") Long userId);
+
     // 사용자 읽은 기사 수 조회
     long countByUserUserId(Long userId);
 
