@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -64,6 +65,13 @@ public class UserInteractionController {
     ) {
         List<UserReadDto> recent = userReadService.getRecentReads(userId, limit);
         return ResponseEntity.ok(recent);
+    }
+
+    // 전체 출석 날짜 (달력용)
+    @GetMapping("/{userId}/reads/dates/all")
+    public ResponseEntity<List<LocalDate>> getAllReadDates(@PathVariable Long userId) {
+        List<LocalDate> dates = userReadService.getAllReadDates(userId);
+        return ResponseEntity.ok(dates);
     }
 
     // 연속 읽기 함수
