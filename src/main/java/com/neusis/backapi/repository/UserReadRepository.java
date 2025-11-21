@@ -56,5 +56,8 @@ public interface UserReadRepository extends JpaRepository<UserRead, Long> {
             @Param("from") LocalDate from
     );
 
+    // 사용자 읽은 기사 수 조회
+    long countByUserUserId(Long userId);
+
     long deleteByUserUserId(Long userId);
 }

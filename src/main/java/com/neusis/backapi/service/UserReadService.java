@@ -110,4 +110,9 @@ public class UserReadService {
 
         return streak;
     }
+
+    // 사용자 읽은 기사 수 조회
+    public long getReadCount(Long userId) {
+        return readRepo.countByUserUserId(userId);
+    }
 }
