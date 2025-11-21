@@ -31,7 +31,7 @@ public class Article {
     @Column(nullable = false, unique = true)
     private String url;             // 원문 URL  (중복 방지 unique = true)
 
-    @Column(nullable = true)
+    @Column(name = "image_url", nullable = true)
     private String imageUrl;   // 기사 대표 이미지 URL (optional)
 
     @Enumerated(EnumType.STRING) // 문자열로 저장
