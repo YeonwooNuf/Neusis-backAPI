@@ -53,7 +53,8 @@ public class UserInteractionController {
     // 사용자 별 좋아요 누른 기사 목록
     @GetMapping("{userId}/likes/articles")
     public ResponseEntity<List<ArticleDto>> getLikedArticles(@PathVariable Long userId) {
-        List<ArticleDto> articles = userLikeService.getLiked
+        List<ArticleDto> articles = userLikeService.getLikedArticles(userId);
+        return ResponseEntity.ok(articles);
     }
 
     // 사용자 별 좋아요 누른 기사 개수
