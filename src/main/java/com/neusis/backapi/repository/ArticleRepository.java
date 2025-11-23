@@ -25,7 +25,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
             Category category, LocalDateTime from, LocalDateTime to, Pageable pageable);
 
     // 기사 목록 출판일 순으로 가져오기
-    List<Article> findAllByIdInOrderByPublishedAtDesc(List<Long> ids);
+    List<Article> findAllByArticleIdInOrderByPublishedAtDesc(List<Long> articleIds);
 
     // 발행일 기준으로 전체 기사 조회 (카테고리 구분 없음)
     Page<Article> findByPublishedAtBetween(
