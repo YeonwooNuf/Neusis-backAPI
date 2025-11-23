@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 // 기사 원문 테이블을 다루는 Repository(DB 접근 계층)
 // 어떤 엔티티를 관리할지(Article) & Article의 기본키 타입(Long)
@@ -22,6 +23,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     // 카테고리 + 발행일 기간으로 기사 목록 조회 (페이징 포함)
     Page<Article> findByCategoryAndPublishedAtBetween(
             Category category, LocalDateTime from, LocalDateTime to, Pageable pageable);
+
+    // 기사 목록 출판일 순으로 가져오기
+    List<Article> findAllByIdInOrderByPublishedAtDesc(List<Long> ids);
 
     // 발행일 기준으로 전체 기사 조회 (카테고리 구분 없음)
     Page<Article> findByPublishedAtBetween(
