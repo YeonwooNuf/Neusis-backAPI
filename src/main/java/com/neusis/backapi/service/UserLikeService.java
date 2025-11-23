@@ -41,12 +41,17 @@ public class UserLikeService {
     }
 
     // 좋아요 누른 기사 목록 가져오기
+    @Transactional(readOnly = true)
     public List<ArticleDto> getLikedArticles(Long userId) {
         // 1) 좋아요 엔티티에서 articleId 목록 가져오기
         List<Long> articleIds = likeRepo.findArticleIdsByUserId(userId);
 
+        if (articleIds.isEmpty()) {
+            return List.of();
+        }
+
         // 가져온 id 기반으로 기사 목록 가져오기(최신순 정렬)
-        List<Article> articles = articleRepo.findAllByIdInOrderByPublishedAtDesc(articleIds);
+        List<Article> articles = articleRepo.findAllByArticleIdInOrderByPublishedAtDesc(articleIds);
 
         // DTO 변환
         return articles.stream()
