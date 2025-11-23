@@ -1,5 +1,6 @@
 package com.neusis.backapi.controller;
 
+import com.neusis.backapi.dto.ArticleDto;
 import com.neusis.backapi.dto.UserReadDto;
 import com.neusis.backapi.service.UserLikeService;
 import com.neusis.backapi.service.UserReadService;
@@ -47,6 +48,12 @@ public class UserInteractionController {
     ) {
         boolean liked = userLikeService.isLiked(userId, articleId);
         return ResponseEntity.ok(liked);
+    }
+
+    // 사용자 별 좋아요 누른 기사 목록
+    @GetMapping("{userId}/likes/articles")
+    public ResponseEntity<List<ArticleDto>> getLikedArticles(@PathVariable Long userId) {
+        List<ArticleDto> articles = userLikeService.getLiked
     }
 
     // 사용자 별 좋아요 누른 기사 개수
