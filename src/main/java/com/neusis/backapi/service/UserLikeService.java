@@ -3,12 +3,15 @@ package com.neusis.backapi.service;
 import com.neusis.backapi.domain.Article;
 import com.neusis.backapi.domain.User;
 import com.neusis.backapi.domain.UserLike;
+import com.neusis.backapi.dto.ArticleDto;
 import com.neusis.backapi.repository.ArticleRepository;
 import com.neusis.backapi.repository.UserLikeRepository;
 import com.neusis.backapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +38,20 @@ public class UserLikeService {
             likeRepo.save(UserLike.builder().user(user).article(article).build());
             return true;
         }
+    }
+
+    // 좋아요 누른 기사 목록 가져오기
+    public List<ArticleDto> getLikedArticles(Long userId) {
+        // 1) 좋아요 엔티티에서 articleId 목록 가져오기
+        List<Long> articleIds = likeRepo.findArticleIdsByUserId(userId);
+
+        // 가져온 id 기반으로 기사 목록 가져오기(최신순 정렬)
+        List<Article> articles = articleRepo.findAllByIdInOrderByPublishedAtDesc(articleIds);
+
+        // DTO 변환
+        return articles.stream()
+                .map(ArticleDto::fromEntity)
+                .toList();
     }
 
     // 좋아요 여부 조회 전용
