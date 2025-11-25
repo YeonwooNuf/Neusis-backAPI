@@ -49,7 +49,7 @@ public class ArticleController {
             @RequestParam(required = false) Category category,
             @RequestParam(required = false) LocalDateTime from,
             @RequestParam(required = false) LocalDateTime to,
-            @RequestParam(required = false)IngestStatus status
+            @RequestParam(required = false) IngestStatus status
     ) {
         return ResponseEntity.ok(articleListService.getArticleListWithUserFlags(userId, page, size, category, from, to, status));
     }
