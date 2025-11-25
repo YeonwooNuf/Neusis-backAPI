@@ -8,6 +8,7 @@ import com.neusis.backapi.repository.ArticleRepository;
 import com.neusis.backapi.repository.UserReadRepository;
 import com.neusis.backapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -109,6 +110,15 @@ public class UserReadService {
         }
 
         return streak;
+    }
+
+    // 사용자가 조회한 기사 중 상위 N개 카테고리 추출
+    public List<String> getTopCategoris(Long userId, int limit) {
+        List<Object[]> rows = readRepo.findTopCategories(userId, PageRequest.of(0, limit));
+        // 조회수는 필요 없고 카테고리 이름만 뽑아오면 되니까 스트림에서 row[0]만 추출.
+        return rows.stream()
+                .map(row -> (String) row[0])    // category 이름
+                .toList();
     }
 
     // 사용자 읽은 기사 수 조회
