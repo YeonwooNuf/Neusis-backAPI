@@ -99,4 +99,13 @@ public class UserInteractionController {
         Long count = userReadService.getReadCount(userId);
         return ResponseEntity.ok(count);
     }
+
+    // 사용자 선호 카테고리 Top3 조회
+    @GetMapping("/{userId}/reads/top-categories")
+    public List<String> getTopCategories(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "3") int limit
+    ) {
+        return userReadService.getTopCategoris(userId, limit);
+    }
 }
