@@ -20,20 +20,40 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     // 특정 URL이 이미 존재하는지 여부 확인
     boolean existsByUrl(String url);
 
-    // 카테고리 + 발행일 기간으로 기사 목록 조회 (페이징 포함)
-    Page<Article> findByCategoryAndPublishedAtBetween(
-            Category category, LocalDateTime from, LocalDateTime to, Pageable pageable);
-
     // 기사 목록 출판일 순으로 가져오기
     List<Article> findAllByArticleIdInOrderByPublishedAtDesc(List<Long> articleIds);
 
-    // 발행일 기준으로 전체 기사 조회 (카테고리 구분 없음)
-    Page<Article> findByPublishedAtBetween(
-            LocalDateTime from, LocalDateTime to, Pageable pageable);
+//    // 카테고리 + 발행일 기간으로 기사 목록 조회 (페이징 포함)
+//    Page<Article> findByCategoryAndPublishedAtBetween(
+//            Category category, LocalDateTime from, LocalDateTime to, Pageable pageable);
+//
+//    // 발행일 기준으로 전체 기사 조회 (카테고리 구분 없음)
+//    Page<Article> findByPublishedAtBetween(
+//            LocalDateTime from, LocalDateTime to, Pageable pageable);
+//
+//    // 기사 수집/분석 상태별 조회
+//    Page<Article> findByIngestStatus(
+//            IngestStatus status, Pageable pageable);
 
+    // 카테고리 + 발행일 기간으로 기사 목록 조회 (페이징 포함)
+    // 발행일 기준으로 전체 기사 조회 (카테고리 구분 없음)
     // 기사 수집/분석 상태별 조회
-    Page<Article> findByIngestStatus(
-            IngestStatus status, Pageable pageable);
+    // 위의 조건별 필터링 및 페이징 통합 버전(null 시 전체 범위)
+    @Query("""
+        select a
+        from Article a
+        where (:category is null or a.category = :category)
+        and (:from is null or a.publishedAt >= :from)
+        and (:to is null or a.publishedAt <= :to)
+        and (:status is null or a.ingestStatus = :status)
+    """)
+    Page<Article> search(
+            @Param("category") Category category,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            @Param("status") IngestStatus status,
+            Pageable pageable
+    );
 
     @Modifying
     @Query("update Article a set a.viewCount = a.viewCount + 1 where a.articleId = :articleId")
