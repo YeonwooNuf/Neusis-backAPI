@@ -40,18 +40,35 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     // 기사 수집/분석 상태별 조회
     // 위의 조건별 필터링 및 페이징 통합 버전(null 시 전체 범위)
     @Query("""
-    select a
-    from Article a
+    select a from Article a
     where (:category is null or a.category = :category)
-      and (:status is null or a.ingestStatus = :status)
       and a.publishedAt >= COALESCE(:from, a.publishedAt)
       and a.publishedAt <= COALESCE(:to, a.publishedAt)
-""")
+      and (:status is null or a.ingestStatus = :status)
+    """)
     Page<Article> search(
             @Param("category") Category category,
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to,
             @Param("status") IngestStatus status,
+            Pageable pageable
+    );
+
+    // 검색어 있을 때(제목 LIKE)
+    @Query("""
+    select a from Article a
+    where (:category is null or a.category = :category)
+      and a.publishedAt >= COALESCE(:from, a.publishedAt)
+      and a.publishedAt <= COALESCE(:to, a.publishedAt)
+      and (:status is null or a.ingestStatus = :status)
+      and lower(a.title) like lower(:search)
+    """)
+    Page<Article> searchWithTitle(
+            @Param("category") Category category,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            @Param("status") IngestStatus status,
+            @Param("search") String search,
             Pageable pageable
     );
 
