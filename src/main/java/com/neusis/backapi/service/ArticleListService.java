@@ -34,7 +34,8 @@ public class ArticleListService {   // 기사 목록을 조회하고 사용자 �
             Integer page, Integer size,
             Category category,
             LocalDateTime from, LocalDateTime to,
-            IngestStatus status
+            IngestStatus status,
+            String search
     ) {
         Pageable pageable = PageRequest.of(
                 page == null ? 0 : page,    // size 기본값 20, 과도한 요청 방지(최대 50)
@@ -42,14 +43,21 @@ public class ArticleListService {   // 기사 목록을 조회하고 사용자 �
                 Sort.by(Sort.Direction.DESC, "publishedAt", "createdAt")
         );
 
-        Page<Article> p = articleRepo.search(category, from, to, status, pageable);
+        // 검색어가 비어 있으면 null, 아니면 %검색어% 형태로 변환
+        String likeSearch = (search == null || search.isBlank())
+                ? null
+                : "%" + search.trim() + "%";
 
-        // 페이징 정보(기사 목록, 전체 건수 등)에서 기사 id만 추출
-        // p.getContent -> 현재 페이지의 엔티티 목록을 반환
-        // .stream -> 목록 순회
-        // .map(Article::getArticleId) -> 각각의 Article 객체에서 Id 필드만 추출
-        // .toList -> Stream을 다시 List 형태로 변환
-        // 결과 -> List<Long> ids = [101, 102, 103, 104, 105];
+        Page<Article> p;
+
+        if (likeSearch == null) {
+            // 검색어 없음 -> 기본 검색 쿼리
+            p = articleRepo.search(category, from, to, status, pageable);
+        } else {
+            // 검색어 있음 -> 제목 LIKE 검색 쿼리
+            p = articleRepo.searchWithTitle(category, from, to, status, likeSearch, pageable);
+        }
+
         var ids = p.getContent().stream().map(Article::getArticleId).toList();
 
         var read = readRepo.findByUserUserIdAndArticleArticleIdIn(userId, ids)
