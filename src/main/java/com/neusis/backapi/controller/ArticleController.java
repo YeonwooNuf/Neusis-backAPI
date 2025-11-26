@@ -49,9 +49,10 @@ public class ArticleController {
             @RequestParam(required = false) Category category,
             @RequestParam(required = false) LocalDateTime from,
             @RequestParam(required = false) LocalDateTime to,
-            @RequestParam(required = false) IngestStatus status
+            @RequestParam(required = false) IngestStatus status,
+            @RequestParam(required = false) String search
     ) {
-        return ResponseEntity.ok(articleListService.getArticleListWithUserFlags(userId, page, size, category, from, to, status));
+        return ResponseEntity.ok(articleListService.getArticleListWithUserFlags(userId, page, size, category, from, to, status, search));
     }
 
     // 기사 상태 변경
