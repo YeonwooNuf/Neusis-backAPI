@@ -65,7 +65,6 @@ public class ArticleDto {
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
                 .analysis(analysisResult != null ? AnalysisDto.fromEntity(analysisResult) : null)
-                .trendScore(null)   // 계산은 ArticleService 에서 함
                 .build();
     }
 }
