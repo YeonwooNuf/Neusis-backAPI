@@ -1,13 +1,19 @@
 package com.neusis.backapi.service;
 
+import com.neusis.backapi.client.AiClient;
 import com.neusis.backapi.domain.Article;
 import com.neusis.backapi.domain.IngestStatus;
+import com.neusis.backapi.domain.Sentiment;
+import com.neusis.backapi.dto.AiAnalysisDto;
+import com.neusis.backapi.dto.AnalysisDto;
 import com.neusis.backapi.dto.ArticleDto;
 import com.neusis.backapi.exception.NotFoundException;
 import com.neusis.backapi.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 // final 이 붙은 필드 자동으로 생성자 파라미터로 변환
 @RequiredArgsConstructor
@@ -20,6 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ArticleService {
     private final ArticleRepository articleRepo;    // 기사 원문 repo
+    private final AnalysisService analysisService;
+    private final AiClient aiClient;
+    private final TrendService trendService;
 
     private Article getArticleOrThrow(Long articleId) {
         return articleRepo.findById(articleId)
@@ -55,8 +64,94 @@ public class ArticleService {
     // 기사 원문 단건 조회
     // 분석 결과가 있으면 DTO.analysis 에 포함
     public ArticleDto getByArticleId(Long articleId) {
-        Article a = getArticleOrThrow(articleId);
-        return ArticleDto.fromEntity(a);
+        Article article = getArticleOrThrow(articleId);
+
+        // 1) 기본 DTO 생성 (analysis 포함)
+        ArticleDto dto = ArticleDto.fromEntity(article);
+
+        // 2) 분석 완료 상태라면 trendScore 계산 후 DTO에 반영
+        if (article.getIngestStatus() == IngestStatus.ANALYZED && dto.getAnalysis() != null) {
+            double trendScore = trendService.calculateTrendScore(article, dto.getAnalysis());
+            dto.setTrendScore(trendScore);
+        }
+
+        return dto;
+    }
+
+    // 기사 AI 분석 트리거
+    // FastAPI에 기사 원문 전달
+    // 분석 결과 → AnalysisDto 로 변환
+    // AnalysisService.upsertAnalysis() 로 저장
+    // 트렌드 점수 계산 및 반영
+    // ingestStatus(PENDING → ANALYZED/FAILED) 관리
+    // 최종 ArticleDto 반환
+    @Transactional
+    public ArticleDto analyzeArticle(Long articleId) {
+
+        // 1) 기사 조회
+        Article article = articleRepo.findById(articleId)
+                .orElseThrow(() -> new NotFoundException("Article not found: " + articleId));
+
+        if (article.getIngestStatus() == IngestStatus.ANALYZED) {
+            return getByArticleId(articleId);
+        }
+
+        // 2) PENDING 상태로 변경
+        article.setIngestStatus(IngestStatus.PENDING);
+
+        try {
+            // 3) FastAPI 요청 DTO 구성
+            AiAnalysisDto.Request request = AiAnalysisDto.Request.builder()
+                    .articleId(article.getArticleId())
+                    .title(article.getTitle())
+                    .content(article.getContent())
+                    .category(article.getCategory().name())
+                    .publishedAt(article.getPublishedAt())
+                    .build();
+
+            // 4) FastAPI 호출
+            AiAnalysisDto.Response response = aiClient.analyze(request);
+
+            // 5) 문자열 → Enum 매핑
+            Sentiment sentiment = mapSentiment(response.getSentiment());
+
+            // 6) DB에 저장할 분석 결과 DTO 생성 (trendScore 없음)
+            AnalysisDto analysisReq = AnalysisDto.builder()
+                    .articleId(articleId)
+                    .summary(response.getSummary())
+                    .sentiment(sentiment)
+                    .keywords(response.getKeywords())
+                    .processedAt(LocalDateTime.now())
+                    .build();
+
+            // 7) 키워드 기반 트렌드 메트릭 업데이트 (trendScore 계산 X)
+            trendService.updateKeywordTrends(article, analysisReq);
+
+            // 8) 분석 결과 저장 (INGEST_STATUS = ANALYZED 처리 포함)
+            analysisService.upsertAnalysis(articleId, analysisReq);
+
+            // 9) 조회 시 trendScore를 계산해 ArticleDto에 담아 반환
+            ArticleDto dto = getByArticleId(articleId);
+
+            // 조회 시점에 trendScore 동적 계산
+            double trendScore = trendService.calculateTrendScore(article, dto.getAnalysis());
+            dto.setTrendScore(trendScore);
+
+            return dto;
+
+        } catch (Exception ex) {
+            article.setIngestStatus(IngestStatus.FAILED);
+            throw ex;
+        }
+    }
+
+    private Sentiment mapSentiment(String raw) {
+        if (raw == null) return Sentiment.NEUTRAL;
+        try {
+            return Sentiment.valueOf(raw.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return Sentiment.NEUTRAL;
+        }
     }
 
     // Pending 상태의 기사를 Failed 나 ANALYZED 로 변경
