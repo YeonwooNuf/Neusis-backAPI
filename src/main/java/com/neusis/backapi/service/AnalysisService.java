@@ -40,7 +40,6 @@ public class AnalysisService {
         r.setSummary(req.getSummary());
         r.setSentiment(req.getSentiment());
         r.setKeywords(req.getKeywords());
-        r.setTrendScore(req.getTrendScore());
         r.setProcessedAt(req.getProcessedAt());
 
         AnalysisResult saved = analysisRepo.save(r);

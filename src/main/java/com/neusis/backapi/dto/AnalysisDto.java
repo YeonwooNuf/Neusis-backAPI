@@ -24,7 +24,6 @@ public class AnalysisDto {
     private Sentiment sentiment;        // 감정 분석 결과
 
     private List<String> keywords;      // 주요 키워드 리스트
-    private Double trendScore;          // 트렌드 점수
 
     private LocalDateTime processedAt;  // 분석 완료 시각
     private LocalDateTime createdAt;    // DB에 저장된 시각
@@ -40,7 +39,6 @@ public class AnalysisDto {
                 .keywords(result.getKeywords() == null
                         ? List.of()
                         : new ArrayList<>(result.getKeywords()))
-                .trendScore(result.getTrendScore())
                 .processedAt(result.getProcessedAt())
                 .createdAt(result.getCreatedAt())
                 .build();

@@ -43,10 +43,13 @@ public class ArticleDto {
 
     private AnalysisDto analysis;       // 분석 결과 (분석 여부에 따라 없을 수도 있음)
 
+    private Double trendScore;
+
     // Entity -> Dto 변환 메소드
     // 엔티티를 그대로 외부 API에 노출하지 않기 위함
     public static ArticleDto fromEntity(Article article) {
         AnalysisResult analysisResult = article.getAnalysisResult();
+
         return ArticleDto.builder()
                 .articleId(article.getArticleId())
                 .title(article.getTitle())
@@ -62,6 +65,7 @@ public class ArticleDto {
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
                 .analysis(analysisResult != null ? AnalysisDto.fromEntity(analysisResult) : null)
+                .trendScore(null)   // 계산은 ArticleService 에서 함
                 .build();
     }
 }

@@ -39,10 +39,6 @@ public class AnalysisResult {   // 분석 결과 테이블
     @Column(name = "keyword", length = 100)
     private List<String> keywords;
 
-    // 트렌드 점수 (0~1 수치)
-    // 기사 키워드가 최근 다른 기사에서 얼마나 자주 등장했는가
-    private Double trendScore;
-
     // 분석 완료 시간
     private LocalDateTime processedAt;
 
