@@ -55,6 +55,13 @@ public class ArticleController {
         return ResponseEntity.ok(articleListService.getArticleListWithUserFlags(userId, page, size, category, from, to, status, search));
     }
 
+    // 기사 AI 분석 트리거
+    @PostMapping("/{articleId}/analyze")
+    public ResponseEntity<ArticleDto> analyzeArticle(@PathVariable Long articleId) {
+        ArticleDto dto = articleService.analyzeArticle(articleId);
+        return ResponseEntity.ok(dto);
+    }
+
     // 기사 상태 변경
     // Put (전체 수정) vs Patch (일부 수정)
     // 상태만 변경하므로 PatchMapping 사용
