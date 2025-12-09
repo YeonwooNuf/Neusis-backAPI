@@ -4,6 +4,7 @@ import com.neusis.backapi.domain.AnalysisResult;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 // 분석 결과 테이블을 다루는 Repository(DB 접근 계층)
@@ -14,6 +15,9 @@ public interface AnalysisResultRepository extends JpaRepository<AnalysisResult, 
     // 분석 상태에 따라 없을 수도 있으므로 Optional 반환
     @EntityGraph(attributePaths = {"keywords", "article"})
     Optional<AnalysisResult> findByArticle_ArticleId(Long articleId);
+
+    // 오늘 분석된 기사 개수 추출용
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 
     // 기사 존재 여부 확인용
     // 중복 분석 등록 방지 등에서 활용 가능
