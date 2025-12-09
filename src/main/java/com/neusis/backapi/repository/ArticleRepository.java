@@ -75,4 +75,25 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Modifying
     @Query("update Article a set a.viewCount = a.viewCount + 1 where a.articleId = :articleId")
     int incrementViewCount(@Param("articleId") Long articleId);
+
+    // 오늘(기간) 저장된 기사 수
+    long countByPublishedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    // 오늘 카테고리별 기사 수
+    @Query("""
+        select a.category as category, count(a) as cnt
+        from Article a
+        where a.publishedAt between :start and :end
+        group by a.category
+        """)
+    List<TodayCategoryCount> countTodayByCategory(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    // 쿼리 결과를 담는 틀
+    interface TodayCategoryCount {
+        Category getCategory();
+        long getCnt();
+    }
 }
