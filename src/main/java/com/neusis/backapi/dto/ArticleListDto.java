@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class ArticleListDto {       // 목록 표시용 Dto
     private Long articleId;
     private String title;
+    private String contentPreview;  // 본문 미리보기
     private String source;
     private LocalDateTime publishedAt;
     private Category category;
@@ -29,7 +30,12 @@ public class ArticleListDto {       // 목록 표시용 Dto
         return ArticleListDto.builder()
                 .articleId(a.getArticleId())
                 .title(a.getTitle())
-                .source(a.getTitle())
+                .contentPreview(
+                        a.getContent() != null
+                                ? a.getContent().substring(0, Math.min(40, a.getContent().length()))
+                                : null
+                )
+                .source(a.getSource())
                 .publishedAt(a.getPublishedAt())
                 .category(a.getCategory())
                 .summary(ar != null ? ar.getSummary() : null)   // 요약 정보 존재 시 반환
